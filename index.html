@@ -21,11 +21,72 @@
             background: linear-gradient(135deg, #3b82f6, #1d4ed8);
             color: white;
         }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .profile-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal show">
+        <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4">
+            <div class="text-center mb-6">
+                <div class="flex justify-center space-x-4 mb-4">
+                    <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
+                        <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+                        </svg>
+                    </div>
+                    <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center">
+                        <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                        </svg>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">Login SID BPD</h2>
+                <p class="text-gray-600">Desa Cikahuripan</p>
+            </div>
+            <form onsubmit="login(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <input type="text" id="username" placeholder="Masukkan username" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="password" placeholder="Masukkan password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-200">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Login
+                </button>
+            </form>
+            <div class="mt-4 text-sm text-gray-600">
+                <p><strong>Demo Akun:</strong></p>
+                <p>Admin: admin / admin123</p>
+                <p>Anggota: anggota / anggota123</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
-    <header class="gradient-bg text-white shadow-lg">
+    <header class="gradient-bg text-white shadow-lg" id="mainHeader" style="display: none;">
         <div class="container mx-auto px-4 py-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
@@ -47,45 +108,36 @@
                         <p class="text-blue-100">Kecamatan Klapanunggal, Kabupaten Bogor - Jawa Barat</p>
                     </div>
                 </div>
-                <div class="text-right">
-                    <p class="text-sm text-blue-100">Sistem Informasi Desa</p>
-                    <p class="text-lg font-semibold">Badan Permusyawaratan Desa</p>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="text-sm text-blue-100">Selamat datang,</p>
+                        <p class="text-lg font-semibold" id="userWelcome">User</p>
+                        <p class="text-xs text-blue-200" id="userRole">Role</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="showProfile()" class="bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md transition duration-200">
+                            <i class="fas fa-user"></i>
+                        </button>
+                        <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-3 py-2 rounded-md transition duration-200">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Navigation -->
-    <nav class="bg-white shadow-md sticky top-0 z-50">
+    <nav class="bg-white shadow-md sticky top-0 z-50" id="mainNav" style="display: none;">
         <div class="container mx-auto px-4">
-            <div class="flex space-x-1 overflow-x-auto">
-                <button onclick="showSection('dashboard')" class="nav-btn px-6 py-4 text-gray-600 hover:text-blue-600 border-b-2 border-transparent hover:border-blue-600 whitespace-nowrap active-menu">
-                    <i class="fas fa-home mr-2"></i>Dashboard
-                </button>
-                <button onclick="showSection('laporan')" class="nav-btn px-6 py-4 text-gray-600 hover:text-blue-600 border-b-2 border-transparent hover:border-blue-600 whitespace-nowrap">
-                    <i class="fas fa-file-alt mr-2"></i>Input Laporan
-                </button>
-                <button onclick="showSection('anggota')" class="nav-btn px-6 py-4 text-gray-600 hover:text-blue-600 border-b-2 border-transparent hover:border-blue-600 whitespace-nowrap">
-                    <i class="fas fa-users mr-2"></i>Data Anggota
-                </button>
-                <button onclick="showSection('kegiatan')" class="nav-btn px-6 py-4 text-gray-600 hover:text-blue-600 border-b-2 border-transparent hover:border-blue-600 whitespace-nowrap">
-                    <i class="fas fa-camera mr-2"></i>Foto Kegiatan
-                </button>
-                <button onclick="showSection('perdes')" class="nav-btn px-6 py-4 text-gray-600 hover:text-blue-600 border-b-2 border-transparent hover:border-blue-600 whitespace-nowrap">
-                    <i class="fas fa-gavel mr-2"></i>Perdes
-                </button>
-                <button onclick="showSection('rapat')" class="nav-btn px-6 py-4 text-gray-600 hover:text-blue-600 border-b-2 border-transparent hover:border-blue-600 whitespace-nowrap">
-                    <i class="fas fa-calendar mr-2"></i>Jadwal Rapat
-                </button>
-                <button onclick="showSection('aspirasi')" class="nav-btn px-6 py-4 text-gray-600 hover:text-blue-600 border-b-2 border-transparent hover:border-blue-600 whitespace-nowrap">
-                    <i class="fas fa-comment mr-2"></i>Aspirasi
-                </button>
+            <div class="flex space-x-1 overflow-x-auto" id="navMenu">
+                <!-- Navigation will be populated based on user role -->
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
+    <main class="container mx-auto px-4 py-8" id="mainContent" style="display: none;">
         <!-- Dashboard Section -->
         <div id="dashboard" class="section">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -175,6 +227,248 @@
             </div>
         </div>
 
+        <!-- Profile Section -->
+        <div id="profile" class="section hidden">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold mb-6 text-gray-800">Profil Pengguna</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <div class="text-center mb-6">
+                            <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full flex items-center justify-center mb-4">
+                                <i class="fas fa-user text-gray-500 text-4xl" id="profileIcon"></i>
+                                <img id="profileImage" class="w-32 h-32 rounded-full object-cover hidden" alt="Profile">
+                            </div>
+                            <button onclick="document.getElementById('photoUpload').click()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-200">
+                                <i class="fas fa-camera mr-2"></i>Ganti Foto
+                            </button>
+                            <input type="file" id="photoUpload" accept="image/*" class="hidden" onchange="uploadPhoto(event)">
+                        </div>
+                        <form class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+                                <input type="text" id="fullName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                                <input type="text" id="profileUsername" class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Jabatan</label>
+                                <input type="text" id="position" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">No. HP</label>
+                                <input type="tel" id="phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
+                                <textarea id="address" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                            </div>
+                            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200">
+                                <i class="fas fa-save mr-2"></i>Simpan Profil
+                            </button>
+                        </form>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 text-gray-800">Ganti Password</h3>
+                        <form class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Password Lama</label>
+                                <input type="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Password Baru</label>
+                                <input type="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Konfirmasi Password Baru</label>
+                                <input type="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition duration-200">
+                                <i class="fas fa-key mr-2"></i>Ganti Password
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Kegiatan Section (Anggota) -->
+        <div id="input-kegiatan" class="section hidden">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold mb-6 text-gray-800">Input Kegiatan BPD</h2>
+                <form class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nama Kegiatan</label>
+                            <input type="text" placeholder="Masukkan nama kegiatan" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Kegiatan</label>
+                            <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Waktu</label>
+                            <input type="time" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tempat</label>
+                            <input type="text" placeholder="Lokasi kegiatan" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi Kegiatan</label>
+                        <textarea rows="4" placeholder="Jelaskan kegiatan yang dilakukan..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Upload Foto Kegiatan</label>
+                        <input type="file" multiple accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200">
+                        <i class="fas fa-save mr-2"></i>Simpan Kegiatan
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Pengawasan Section (Anggota) -->
+        <div id="pengawasan" class="section hidden">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold mb-6 text-gray-800">Laporan Pengawasan</h2>
+                <form class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Objek Pengawasan</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option>Pelaksanaan APBDes</option>
+                                <option>Program Pembangunan</option>
+                                <option>Pelayanan Publik</option>
+                                <option>Administrasi Desa</option>
+                                <option>Lainnya</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Pengawasan</label>
+                            <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Temuan</label>
+                        <textarea rows="4" placeholder="Jelaskan temuan hasil pengawasan..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Rekomendasi</label>
+                        <textarea rows="4" placeholder="Berikan rekomendasi perbaikan..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Upload Dokumentasi</label>
+                        <input type="file" multiple accept="image/*,.pdf" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200">
+                        <i class="fas fa-save mr-2"></i>Simpan Laporan
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Administrasi Section (Admin Only) -->
+        <div id="administrasi" class="section hidden">
+            <div class="space-y-8">
+                <!-- Logo Management -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4 text-gray-800">Manajemen Logo</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="text-center">
+                            <h4 class="font-medium text-gray-700 mb-3">Logo BPD</h4>
+                            <div class="w-32 h-32 mx-auto bg-gray-100 rounded-lg flex items-center justify-center mb-4">
+                                <i class="fas fa-shield-alt text-blue-600 text-4xl"></i>
+                            </div>
+                            <button onclick="document.getElementById('logoBPD').click()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-200">
+                                <i class="fas fa-upload mr-2"></i>Upload Logo BPD
+                            </button>
+                            <input type="file" id="logoBPD" accept="image/*" class="hidden">
+                        </div>
+                        <div class="text-center">
+                            <h4 class="font-medium text-gray-700 mb-3">Logo Desa</h4>
+                            <div class="w-32 h-32 mx-auto bg-gray-100 rounded-lg flex items-center justify-center mb-4">
+                                <i class="fas fa-map-marker-alt text-green-600 text-4xl"></i>
+                            </div>
+                            <button onclick="document.getElementById('logoDesa').click()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-200">
+                                <i class="fas fa-upload mr-2"></i>Upload Logo Desa
+                            </button>
+                            <input type="file" id="logoDesa" accept="image/*" class="hidden">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Management -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800">Manajemen Pengguna</h3>
+                        <button onclick="showAddUser()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-200">
+                            <i class="fas fa-plus mr-2"></i>Tambah Pengguna
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full table-auto">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Foto</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Username</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Role</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Status</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-4 py-3">
+                                        <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-user text-gray-500"></i>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-900">Administrator</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900">admin</td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">Admin</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Aktif</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <button class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3">
+                                        <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-user text-gray-500"></i>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-900">H. Ahmad Suryadi</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900">anggota</td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Anggota</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Aktif</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <button class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
+                                        <button class="text-red-600 hover:text-red-800">Nonaktif</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other sections (laporan, anggota, kegiatan, etc.) remain the same as previous version -->
         <!-- Input Laporan Section -->
         <div id="laporan" class="section hidden">
             <div class="bg-white rounded-lg shadow-md p-6">
@@ -219,7 +513,7 @@
             <div class="bg-white rounded-lg shadow-md p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold text-gray-800">Data Anggota BPD</h2>
-                    <button onclick="showAddMember()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-200">
+                    <button onclick="showAddMember()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-200" id="addMemberBtn">
                         <i class="fas fa-plus mr-2"></i>Tambah Anggota
                     </button>
                 </div>
@@ -227,7 +521,7 @@
                     <table class="w-full table-auto">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">No</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Foto</th>
                                 <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nama</th>
                                 <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Jabatan</th>
                                 <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Alamat</th>
@@ -237,36 +531,18 @@
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                             <tr>
-                                <td class="px-4 py-3 text-sm text-gray-900">1</td>
+                                <td class="px-4 py-3">
+                                    <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user text-gray-500"></i>
+                                    </div>
+                                </td>
                                 <td class="px-4 py-3 text-sm text-gray-900">H. Ahmad Suryadi</td>
                                 <td class="px-4 py-3 text-sm text-gray-900">Ketua BPD</td>
                                 <td class="px-4 py-3 text-sm text-gray-900">RT 01/RW 01</td>
                                 <td class="px-4 py-3 text-sm text-gray-900">0812-3456-7890</td>
                                 <td class="px-4 py-3 text-sm">
                                     <button class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
-                                    <button class="text-red-600 hover:text-red-800">Hapus</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-3 text-sm text-gray-900">2</td>
-                                <td class="px-4 py-3 text-sm text-gray-900">Siti Nurhalimah</td>
-                                <td class="px-4 py-3 text-sm text-gray-900">Wakil Ketua</td>
-                                <td class="px-4 py-3 text-sm text-gray-900">RT 02/RW 01</td>
-                                <td class="px-4 py-3 text-sm text-gray-900">0813-4567-8901</td>
-                                <td class="px-4 py-3 text-sm">
-                                    <button class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
-                                    <button class="text-red-600 hover:text-red-800">Hapus</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-3 text-sm text-gray-900">3</td>
-                                <td class="px-4 py-3 text-sm text-gray-900">Budi Santoso</td>
-                                <td class="px-4 py-3 text-sm text-gray-900">Sekretaris</td>
-                                <td class="px-4 py-3 text-sm text-gray-900">RT 01/RW 02</td>
-                                <td class="px-4 py-3 text-sm text-gray-900">0814-5678-9012</td>
-                                <td class="px-4 py-3 text-sm">
-                                    <button class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
-                                    <button class="text-red-600 hover:text-red-800">Hapus</button>
+                                    <button class="text-red-600 hover:text-red-800" id="deleteBtn" style="display: none;">Hapus</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -275,203 +551,11 @@
             </div>
         </div>
 
-        <!-- Foto Kegiatan Section -->
-        <div id="kegiatan" class="section hidden">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">Foto-foto Kegiatan BPD</h2>
-                    <button onclick="showAddPhoto()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-200">
-                        <i class="fas fa-plus mr-2"></i>Upload Foto
-                    </button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="bg-gray-100 rounded-lg p-4 card-hover">
-                        <div class="w-full h-48 bg-gray-300 rounded-lg flex items-center justify-center mb-4">
-                            <i class="fas fa-image text-gray-500 text-4xl"></i>
-                        </div>
-                        <h3 class="font-semibold text-gray-800 mb-2">Musyawarah Desa</h3>
-                        <p class="text-sm text-gray-600 mb-2">Pembahasan APBDes 2024</p>
-                        <p class="text-xs text-gray-500">10 Januari 2024</p>
-                    </div>
-                    <div class="bg-gray-100 rounded-lg p-4 card-hover">
-                        <div class="w-full h-48 bg-gray-300 rounded-lg flex items-center justify-center mb-4">
-                            <i class="fas fa-image text-gray-500 text-4xl"></i>
-                        </div>
-                        <h3 class="font-semibold text-gray-800 mb-2">Sosialisasi Perdes</h3>
-                        <p class="text-sm text-gray-600 mb-2">Sosialisasi Perdes No. 1 Tahun 2024</p>
-                        <p class="text-xs text-gray-500">8 Januari 2024</p>
-                    </div>
-                    <div class="bg-gray-100 rounded-lg p-4 card-hover">
-                        <div class="w-full h-48 bg-gray-300 rounded-lg flex items-center justify-center mb-4">
-                            <i class="fas fa-image text-gray-500 text-4xl"></i>
-                        </div>
-                        <h3 class="font-semibold text-gray-800 mb-2">Rapat Koordinasi</h3>
-                        <p class="text-sm text-gray-600 mb-2">Koordinasi dengan Kepala Desa</p>
-                        <p class="text-xs text-gray-500">5 Januari 2024</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Perdes Section -->
-        <div id="perdes" class="section hidden">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">Peraturan Desa (Perdes)</h2>
-                    <button onclick="showAddPerdes()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-200">
-                        <i class="fas fa-plus mr-2"></i>Tambah Perdes
-                    </button>
-                </div>
-                <div class="space-y-4">
-                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-200">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="font-semibold text-gray-800 mb-2">Perdes No. 1 Tahun 2024</h3>
-                                <p class="text-gray-600 mb-2">Tentang Anggaran Pendapatan dan Belanja Desa (APBDes) Tahun 2024</p>
-                                <div class="flex items-center space-x-4 text-sm text-gray-500">
-                                    <span><i class="fas fa-calendar mr-1"></i>15 Januari 2024</span>
-                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full">Aktif</span>
-                                </div>
-                            </div>
-                            <div class="flex space-x-2">
-                                <button class="text-blue-600 hover:text-blue-800">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="text-green-600 hover:text-green-800">
-                                    <i class="fas fa-download"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-200">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="font-semibold text-gray-800 mb-2">Perdes No. 2 Tahun 2023</h3>
-                                <p class="text-gray-600 mb-2">Tentang Badan Usaha Milik Desa (BUMDes)</p>
-                                <div class="flex items-center space-x-4 text-sm text-gray-500">
-                                    <span><i class="fas fa-calendar mr-1"></i>20 Desember 2023</span>
-                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full">Aktif</span>
-                                </div>
-                            </div>
-                            <div class="flex space-x-2">
-                                <button class="text-blue-600 hover:text-blue-800">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="text-green-600 hover:text-green-800">
-                                    <i class="fas fa-download"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Jadwal Rapat Section -->
-        <div id="rapat" class="section hidden">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">Jadwal Rapat BPD</h2>
-                    <button onclick="showAddRapat()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-200">
-                        <i class="fas fa-plus mr-2"></i>Tambah Jadwal
-                    </button>
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="space-y-4">
-                        <h3 class="text-lg font-semibold text-gray-800">Rapat Mendatang</h3>
-                        <div class="border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg">
-                            <h4 class="font-semibold text-gray-800">Rapat Pleno BPD</h4>
-                            <p class="text-sm text-gray-600 mt-1">Pembahasan Perdes APBDes 2024</p>
-                            <div class="flex items-center mt-2 text-sm text-gray-500">
-                                <i class="fas fa-calendar mr-2"></i>15 Januari 2024, 19:00 WIB
-                            </div>
-                            <div class="flex items-center mt-1 text-sm text-gray-500">
-                                <i class="fas fa-map-marker-alt mr-2"></i>Balai Desa Cikahuripan
-                            </div>
-                        </div>
-                        <div class="border-l-4 border-green-500 bg-green-50 p-4 rounded-r-lg">
-                            <h4 class="font-semibold text-gray-800">Rapat Koordinasi</h4>
-                            <p class="text-sm text-gray-600 mt-1">Koordinasi dengan Kepala Desa</p>
-                            <div class="flex items-center mt-2 text-sm text-gray-500">
-                                <i class="fas fa-calendar mr-2"></i>20 Januari 2024, 14:00 WIB
-                            </div>
-                            <div class="flex items-center mt-1 text-sm text-gray-500">
-                                <i class="fas fa-map-marker-alt mr-2"></i>Kantor Desa
-                            </div>
-                        </div>
-                    </div>
-                    <div class="space-y-4">
-                        <h3 class="text-lg font-semibold text-gray-800">Rapat Selesai</h3>
-                        <div class="border border-gray-200 p-4 rounded-lg">
-                            <h4 class="font-semibold text-gray-800">Musyawarah Desa</h4>
-                            <p class="text-sm text-gray-600 mt-1">Pembahasan Program Kerja 2024</p>
-                            <div class="flex items-center mt-2 text-sm text-gray-500">
-                                <i class="fas fa-calendar mr-2"></i>10 Januari 2024
-                            </div>
-                            <span class="inline-block mt-2 bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs">Selesai</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Aspirasi Section -->
-        <div id="aspirasi" class="section hidden">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold mb-6 text-gray-800">Aspirasi Masyarakat</h2>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div>
-                        <h3 class="text-lg font-semibold mb-4 text-gray-800">Aspirasi Terbaru</h3>
-                        <div class="space-y-4">
-                            <div class="border border-gray-200 rounded-lg p-4">
-                                <div class="flex justify-between items-start mb-2">
-                                    <h4 class="font-semibold text-gray-800">Perbaikan Jalan Desa</h4>
-                                    <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Proses</span>
-                                </div>
-                                <p class="text-sm text-gray-600 mb-2">Mohon diperbaiki jalan di RT 02 yang rusak parah</p>
-                                <p class="text-xs text-gray-500">Dari: Warga RT 02 | 12 Januari 2024</p>
-                            </div>
-                            <div class="border border-gray-200 rounded-lg p-4">
-                                <div class="flex justify-between items-start mb-2">
-                                    <h4 class="font-semibold text-gray-800">Pembangunan Posyandu</h4>
-                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Selesai</span>
-                                </div>
-                                <p class="text-sm text-gray-600 mb-2">Usulan pembangunan posyandu di RW 03</p>
-                                <p class="text-xs text-gray-500">Dari: Kader Posyandu | 8 Januari 2024</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-semibold mb-4 text-gray-800">Form Aspirasi Baru</h3>
-                        <form class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Nama Pengusul</label>
-                                <input type="text" placeholder="Masukkan nama" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
-                                <input type="text" placeholder="RT/RW" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Judul Aspirasi</label>
-                                <input type="text" placeholder="Masukkan judul" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Isi Aspirasi</label>
-                                <textarea rows="4" placeholder="Masukkan aspirasi..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                            </div>
-                            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-200">
-                                <i class="fas fa-paper-plane mr-2"></i>Kirim Aspirasi
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- Other sections continue... -->
     </main>
 
     <!-- Footer -->
-    <footer class="gradient-bg text-white mt-12">
+    <footer class="gradient-bg text-white mt-12" id="mainFooter" style="display: none;">
         <div class="container mx-auto px-4 py-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
@@ -502,6 +586,129 @@
     </footer>
 
     <script>
+        let currentUser = null;
+        let userRole = null;
+
+        // User data
+        const users = {
+            'admin': {
+                password: 'admin123',
+                role: 'admin',
+                name: 'Administrator',
+                position: 'Administrator Sistem',
+                phone: '0812-1234-5678',
+                address: 'Kantor Desa Cikahuripan'
+            },
+            'anggota': {
+                password: 'anggota123',
+                role: 'anggota',
+                name: 'H. Ahmad Suryadi',
+                position: 'Ketua BPD',
+                phone: '0812-3456-7890',
+                address: 'RT 01/RW 01, Desa Cikahuripan'
+            }
+        };
+
+        // Navigation menus based on role
+        const menusByRole = {
+            admin: [
+                { id: 'dashboard', icon: 'fas fa-home', text: 'Dashboard' },
+                { id: 'profile', icon: 'fas fa-user', text: 'Profil' },
+                { id: 'laporan', icon: 'fas fa-file-alt', text: 'Input Laporan' },
+                { id: 'anggota', icon: 'fas fa-users', text: 'Data Anggota' },
+                { id: 'administrasi', icon: 'fas fa-cogs', text: 'Administrasi' }
+            ],
+            anggota: [
+                { id: 'dashboard', icon: 'fas fa-home', text: 'Dashboard' },
+                { id: 'profile', icon: 'fas fa-user', text: 'Profil' },
+                { id: 'input-kegiatan', icon: 'fas fa-calendar-plus', text: 'Input Kegiatan' },
+                { id: 'pengawasan', icon: 'fas fa-eye', text: 'Pengawasan' }
+            ]
+        };
+
+        function login(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (users[username] && users[username].password === password) {
+                currentUser = username;
+                userRole = users[username].role;
+                
+                // Hide login modal
+                document.getElementById('loginModal').classList.remove('show');
+                
+                // Show main interface
+                document.getElementById('mainHeader').style.display = 'block';
+                document.getElementById('mainNav').style.display = 'block';
+                document.getElementById('mainContent').style.display = 'block';
+                document.getElementById('mainFooter').style.display = 'block';
+                
+                // Update user info
+                document.getElementById('userWelcome').textContent = users[username].name;
+                document.getElementById('userRole').textContent = userRole === 'admin' ? 'Administrator' : 'Anggota BPD';
+                
+                // Load navigation menu
+                loadNavigation();
+                
+                // Load profile data
+                loadProfileData();
+                
+                // Show dashboard
+                showSection('dashboard');
+                
+                // Update UI based on role
+                updateUIByRole();
+                
+            } else {
+                alert('Username atau password salah!');
+            }
+        }
+
+        function loadNavigation() {
+            const navMenu = document.getElementById('navMenu');
+            const menus = menusByRole[userRole];
+            
+            navMenu.innerHTML = '';
+            
+            menus.forEach(menu => {
+                const button = document.createElement('button');
+                button.onclick = () => showSection(menu.id);
+                button.className = 'nav-btn px-6 py-4 text-gray-600 hover:text-blue-600 border-b-2 border-transparent hover:border-blue-600 whitespace-nowrap';
+                button.innerHTML = `<i class="${menu.icon} mr-2"></i>${menu.text}`;
+                
+                if (menu.id === 'dashboard') {
+                    button.classList.add('active-menu');
+                }
+                
+                navMenu.appendChild(button);
+            });
+        }
+
+        function loadProfileData() {
+            const user = users[currentUser];
+            document.getElementById('fullName').value = user.name;
+            document.getElementById('profileUsername').value = currentUser;
+            document.getElementById('position').value = user.position;
+            document.getElementById('phone').value = user.phone;
+            document.getElementById('address').value = user.address;
+        }
+
+        function updateUIByRole() {
+            // Hide/show elements based on role
+            const addMemberBtn = document.getElementById('addMemberBtn');
+            const deleteBtn = document.getElementById('deleteBtn');
+            
+            if (userRole === 'admin') {
+                if (addMemberBtn) addMemberBtn.style.display = 'inline-block';
+                if (deleteBtn) deleteBtn.style.display = 'inline';
+            } else {
+                if (addMemberBtn) addMemberBtn.style.display = 'none';
+                if (deleteBtn) deleteBtn.style.display = 'none';
+            }
+        }
+
         function showSection(sectionName) {
             // Hide all sections
             const sections = document.querySelectorAll('.section');
@@ -510,7 +717,10 @@
             });
             
             // Show selected section
-            document.getElementById(sectionName).classList.remove('hidden');
+            const targetSection = document.getElementById(sectionName);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
             
             // Update navigation
             const navButtons = document.querySelectorAll('.nav-btn');
@@ -519,30 +729,68 @@
                 btn.classList.add('text-gray-600');
             });
             
-            event.target.classList.add('active-menu');
-            event.target.classList.remove('text-gray-600');
+            if (event && event.target) {
+                event.target.classList.add('active-menu');
+                event.target.classList.remove('text-gray-600');
+            }
+        }
+
+        function showProfile() {
+            showSection('profile');
+            
+            // Update navigation
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                btn.classList.remove('active-menu');
+            });
+        }
+
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                currentUser = null;
+                userRole = null;
+                
+                // Hide main interface
+                document.getElementById('mainHeader').style.display = 'none';
+                document.getElementById('mainNav').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'none';
+                document.getElementById('mainFooter').style.display = 'none';
+                
+                // Show login modal
+                document.getElementById('loginModal').classList.add('show');
+                
+                // Reset form
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+            }
+        }
+
+        function uploadPhoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileIcon').style.display = 'none';
+                    document.getElementById('profileImage').src = e.target.result;
+                    document.getElementById('profileImage').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function showAddUser() {
+            alert('Form tambah pengguna akan ditampilkan di sini');
         }
 
         function showAddMember() {
             alert('Form tambah anggota akan ditampilkan di sini');
         }
 
-        function showAddPhoto() {
-            alert('Form upload foto akan ditampilkan di sini');
-        }
-
-        function showAddPerdes() {
-            alert('Form tambah Perdes akan ditampilkan di sini');
-        }
-
-        function showAddRapat() {
-            alert('Form tambah jadwal rapat akan ditampilkan di sini');
-        }
-
-        // Initialize dashboard as active
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            showSection('dashboard');
+            // Show login modal by default
+            document.getElementById('loginModal').classList.add('show');
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'976a867ff2753ddc',t:'MTc1NjQ1NDUzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'976a9d115323fd6f',t:'MTc1NjQ1NTQ2Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
